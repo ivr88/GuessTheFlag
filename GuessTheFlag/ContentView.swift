@@ -7,6 +7,11 @@ struct ContentView: View {
     
     @State private var showingScore = false
     @State private var scoreTitle = ""
+    @State private var userScore = 0
+    
+    @State private var tapNumber = 0
+    @State private var tapNumberString = ""
+    @State private var showingAlert = false
     
     var body: some View {
         
@@ -23,7 +28,7 @@ struct ContentView: View {
                 VStack (spacing: 15) {
                     VStack {
                         Text("Tap the flag of")
-                            .font(.subheadline.weight(.heavy))
+                            .font(.title2.weight(.heavy))
                             .foregroundStyle(.secondary)
                         Text(countries[correctAnswer])
                             .font(.largeTitle.weight(.semibold))
@@ -32,6 +37,8 @@ struct ContentView: View {
                     ForEach(0..<3) { number in
                         Button {
                             flagTapped(number)
+                            userScoreCalc(number)
+                            calcQuestion()
                         } label: {
                             Image(countries[number])
                                 .clipShape(.capsule)
@@ -43,16 +50,22 @@ struct ContentView: View {
                 .padding(.vertical, 20)
                 .background(.regularMaterial)
                 .clipShape(.rect(cornerRadius: 20))
-                
                 .alert(scoreTitle, isPresented: $showingScore) {
                     Button("Continue", action: askQuestion)
                 } message: {
-                    Text ("Your score is ???")
+                    Text ("Your score is \(userScore)")
                 }
-                
+                .alert(tapNumberString, isPresented: $showingAlert) {
+                    Button("At first", action: reset)
+                } message: {
+                    Text ("Game over")
+                }
                 Spacer()
                 Spacer()
-                Text ("Score: ???")
+                Group {
+                    Text ("Question: \(tapNumber)")
+                    Text ("Score: \(userScore)")
+                }
                     .foregroundStyle(.white)
                     .font(.title.bold())
                 Spacer()
@@ -64,16 +77,37 @@ struct ContentView: View {
     func flagTapped(_ number: Int) {
         if number == correctAnswer {
             scoreTitle = "Correct"
+            tapNumber += 1
         } else {
-            scoreTitle = "Wrong"
+            scoreTitle = "Incorrect! It's flag of \(countries[number])"
+            tapNumber += 1
         }
-        
         showingScore = true
+    }
+    
+    func reset() {
+        tapNumber = 0
+        userScore = 0
     }
     
     func askQuestion() {
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
+    }
+    
+    func userScoreCalc(_ number: Int) {
+        if number == correctAnswer {
+            userScore += 1
+        } else {
+            userScore -= 1
+        }
+        showingScore = true
+    }
+    
+    func calcQuestion () {
+        guard tapNumber != 3 else {
+            return showingAlert = true
+        }
     }
 }
 
