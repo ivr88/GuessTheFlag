@@ -37,7 +37,6 @@ struct ContentView: View {
                     ForEach(0..<3) { number in
                         Button {
                             flagTapped(number)
-                            userScoreCalc(number)
                             calcQuestion()
                         } label: {
                             Image(countries[number])
@@ -56,9 +55,9 @@ struct ContentView: View {
                     Text ("Your score is \(userScore)")
                 }
                 .alert(tapNumberString, isPresented: $showingAlert) {
-                    Button("At first", action: reset)
+                    Button("Start", action: reset)
                 } message: {
-                    Text ("Game over")
+                    Text ("Game over. Your score is \(userScore)")
                 }
                 Spacer()
                 Spacer()
@@ -76,8 +75,9 @@ struct ContentView: View {
     
     func flagTapped(_ number: Int) {
         if number == correctAnswer {
-            scoreTitle = "Correct"
+            scoreTitle = "Exellent. You are right"
             tapNumber += 1
+            userScore += 1
         } else {
             scoreTitle = "Incorrect! It's flag of \(countries[number])"
             tapNumber += 1
@@ -95,17 +95,9 @@ struct ContentView: View {
         correctAnswer = Int.random(in: 0...2)
     }
     
-    func userScoreCalc(_ number: Int) {
-        if number == correctAnswer {
-            userScore += 1
-        } else {
-            userScore -= 1
-        }
-        showingScore = true
-    }
-    
     func calcQuestion () {
         guard tapNumber != 3 else {
+            tapNumberString = "That's all"
             return showingAlert = true
         }
     }
