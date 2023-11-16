@@ -39,9 +39,7 @@ struct ContentView: View {
                             flagTapped(number)
                             calcQuestion()
                         } label: {
-                            Image(countries[number])
-                                .clipShape(.capsule)
-                                .shadow(radius: 5)
+                            FlagImage(image: countries[number])
                         }
                     }
                 }
@@ -100,6 +98,15 @@ struct ContentView: View {
             tapNumberString = "That's all"
             return showingAlert = true
         }
+    }
+}
+
+struct FlagImage: View {
+    var image: String
+    var body: some View {
+        Image(image)
+            .clipShape(.capsule)
+            .shadow(radius: 5)
     }
 }
 
