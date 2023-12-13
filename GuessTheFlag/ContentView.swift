@@ -13,6 +13,8 @@ struct ContentView: View {
     @State private var tapNumberString = ""
     @State private var showingAlert = false
     
+    @State private var animationAmount = 0.0
+    
     var body: some View {
         
         ZStack {
@@ -33,14 +35,16 @@ struct ContentView: View {
                         Text(countries[correctAnswer])
                             .font(.largeTitle.weight(.semibold))
                     }
-                    
                     ForEach(0..<3) { number in
                         Button {
                             flagTapped(number)
-                            calcQuestion()
+                            guard tapNumber != 3 else {
+                                return calcQuestion()
+                            }
                         } label: {
                             FlagImage(image: countries[number])
                         }
+                        .rotation3DEffect(.degrees(animationAmount), axis: (x: 0, y: 1, z: 0))
                     }
                 }
                 .frame(maxWidth: .infinity)
@@ -76,6 +80,9 @@ struct ContentView: View {
             scoreTitle = "Exellent. You are right"
             tapNumber += 1
             userScore += 1
+            withAnimation(.spring(duration: 1, bounce: 0.5)) {
+                animationAmount += 360
+            }
         } else {
             scoreTitle = "Incorrect! It's flag of \(countries[number])"
             tapNumber += 1
@@ -94,10 +101,8 @@ struct ContentView: View {
     }
     
     func calcQuestion () {
-        guard tapNumber != 3 else {
-            tapNumberString = "That's all"
-            return showingAlert = true
-        }
+        tapNumberString = "That's all"
+        showingAlert = true
     }
 }
 
